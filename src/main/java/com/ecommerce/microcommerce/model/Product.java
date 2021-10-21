@@ -1,27 +1,35 @@
 package com.ecommerce.microcommerce.model;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.validation.annotation.Validated;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-@JsonFilter("monFiltreDynamique")
 @Entity
+@JsonFilter("cacherChampsProduit")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Min(value=1, message = "L'identifiant doit forcément être strictement positif.")
     private int id;
 
-    @Length(min=3, max=20, message="Erreur sur la longueur du nom. Elle doit être comprise entre 3 et 20!!!")
+    @NotNull(message = "Le nom du produit ne peut pas être null.")
+    @Size(min=3, max=20, message="Le nom du produit doit être compris entre 3 et 20 caractères.")
     private String nom;
-    @Min(value=1, message="Le prix doit être forcément strictement positif!!!")
+
+    @Min(value=1, message="Le prix de vente du produit doit être forcément strictement positif.")
     private int prix;
+
+    @Min(value=1, message="Le prix d'achat du produit doit être forcément strictement positif.")
+    @Schema(accessMode = Schema.AccessMode.WRITE_ONLY)
+    //@JsonProperty(value = "prixAchat", access = JsonProperty.Access.WRITE_ONLY)
     private int prixAchat;
 
     public Product() { }
@@ -67,7 +75,6 @@ public class Product {
                 "id=" + id +
                 ", nom='" + nom + '\'' +
                 ", prix=" + prix +
-                ", prixAchat=" + prixAchat +
                 '}';
     }
 }
